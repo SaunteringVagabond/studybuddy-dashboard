@@ -1,117 +1,38 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Evalyn's StudyBuddy Portal</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-50 p-8 font-sans">
-  <div class="max-w-2xl mx-auto bg-white shadow-lg rounded-lg p-6">
+<form id="evalynForm">
+  <input id="dailySummary" placeholder="Daily Summary">
+  <input id="completedAssignments" placeholder="Completed Assignments">
+  <input id="moodCheckin" placeholder="Mood Check-in">
+  <input id="notesFromEvalyn" placeholder="Notes from Evalyn">
+  <button type="submit">Submit</button>
+</form>
 
-    <h1 class="text-2xl font-bold text-purple-700 mb-6">Evalyn's StudyBuddy Portal</h1>
+<input id="chatInputEvalyn" placeholder="Message StudyBuddy">
+<button id="sendChatEvalyn">Send Chat</button>
 
-    <!-- Structured Form for Evalyn's Responses -->
-    <form id="evalynForm" class="space-y-4">
-      <input type="text" id="dailySummary" class="w-full p-2 border rounded" placeholder="Daily Summary">
-      <input type="text" id="completedAssignments" class="w-full p-2 border rounded" placeholder="Completed Assignments">
-      <input type="text" id="moodCheckin" class="w-full p-2 border rounded" placeholder="Mood Check-in">
-      <input type="text" id="notesFromEvalyn" class="w-full p-2 border rounded" placeholder="Notes from Evalyn">
-      <button type="submit" class="w-full bg-purple-600 text-white p-2 rounded hover:bg-purple-700">
-        Submit Daily Updates
-      </button>
-    </form>
+<script>
+document.getElementById('evalynForm').onsubmit = (e) => {
+  e.preventDefault();
+  fetch('https://script.google.com/macros/s/AKfycbyf_IDLlhxDEK9X3sm1iJMsapSw7CngesCN4lnWVLhdnFA-i876Toz3MY4KGSUx7rzY/exec', {
+    method: 'POST', mode: 'no-cors',
+    headers: {'Content-Type':'application/x-www-form-urlencoded'},
+    body: new URLSearchParams({
+      source: 'evalynForm',
+      dailySummary: document.getElementById('dailySummary').value,
+      completedAssignments: document.getElementById('completedAssignments').value,
+      moodCheckin: document.getElementById('moodCheckin').value,
+      notesFromEvalyn: document.getElementById('notesFromEvalyn').value
+    })
+  }).then(() => alert("Evalyn's updates submitted 🎉"));
+};
 
-    <hr class="my-6">
-
-    <!-- Assignments & Reminders Display -->
-    <div class="mb-6">
-      <h2 class="text-xl font-bold text-indigo-600 mb-4">Assignments & Reminders 📚</h2>
-      <div id="updatesBox" class="bg-gray-100 rounded-lg p-4 h-48 overflow-auto">
-        <div class="mb-2">
-          <div class="text-sm font-medium text-gray-800">Parent Updates:</div>
-          <div class="bg-purple-100 rounded p-2 text-sm">No new updates yet.</div>
-        </div>
-      </div>
-    </div>
-
-    <hr class="my-6">
-
-    <!-- StudyBuddy Chat -->
-    <div>
-      <h2 class="text-xl font-bold text-green-600 mb-4">🌟 StudyBuddy Chat 🌟</h2>
-      <div id="chatBox" class="bg-gray-100 rounded-lg p-4 h-48 overflow-auto">
-        <div class="mb-2">
-          <div class="text-sm font-medium text-gray-800">StudyBuddy:</div>
-          <div class="bg-blue-100 rounded p-2 text-sm">Hi Evalyn! Ready to have a great study session?</div>
-        </div>
-      </div>
-
-      <div class="mt-4 flex">
-        <input type="text" id="chatInput" class="flex-grow p-2 border rounded-l" placeholder="Type your message...">
-        <button id="chatSend" class="bg-indigo-600 text-white p-2 rounded-r hover:bg-indigo-700">Send</button>
-      </div>
-    </div>
-
-  </div>
-
-  <script>
-    // Form submission for Evalyn's updates
-    document.getElementById('evalynForm').addEventListener('submit', function(event) {
-      event.preventDefault();
-
-      const formData = new URLSearchParams({
-        dailySummary: document.getElementById('dailySummary').value,
-        completedAssignments: document.getElementById('completedAssignments').value,
-        moodCheckin: document.getElementById('moodCheckin').value,
-        notesFromEvalyn: document.getElementById('notesFromEvalyn').value
-      });
-
-      fetch('YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL', {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: formData
-      }).then(() => {
-        alert("Evalyn's updates successfully submitted! 🎉");
-        document.getElementById('evalynForm').reset();
-      }).catch(error => {
-        console.error('Error submitting form:', error);
-      });
-    });
-
-    // Chat message submission
-    document.getElementById('chatSend').addEventListener('click', () => {
-      const chatInput = document.getElementById('chatInput').value.trim();
-
-      if (chatInput !== "") {
-        const chatBox = document.getElementById('chatBox');
-
-        const evalynMsgDiv = document.createElement('div');
-        evalynMsgDiv.className = 'bg-indigo-100 rounded p-2 text-sm mb-2';
-        evalynMsgDiv.textContent = chatInput;
-
-        chatBox.appendChild(evalynMsgDiv);
-        chatBox.scrollTop = chatBox.scrollHeight;
-
-        fetch('https://script.google.com/macros/s/AKfycbw_6hivU1qFzVrLxX1j3QzU4n1I7wLw3IgtzwtPnojL4BZy568xXKoOWDztKb_e9fiq/exec', {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          body: new URLSearchParams({ chatMessage: chatInput })
-        });
-
-        document.getElementById('chatInput').value = "";
-      }
-    });
-
-    // Placeholder for future real-time updates
-    async function fetchUpdates() {
-      // Fetch and display logic here (future implementation)
-    }
-
-    // Future update checker
-    // setInterval(fetchUpdates, 30000);
-  </script>
-</body>
-</html>
+document.getElementById('sendChatEvalyn').onclick = () => {
+  fetch('https://script.google.com/macros/s/AKfycbyf_IDLlhxDEK9X3sm1iJMsapSw7CngesCN4lnWVLhdnFA-i876Toz3MY4KGSUx7rzY/exec', {
+    method: 'POST', mode: 'no-cors',
+    headers: {'Content-Type':'application/x-www-form-urlencoded'},
+    body: new URLSearchParams({
+      source: 'evalynForm',
+      notesFromEvalyn: document.getElementById('chatInputEvalyn').value
+    })
+  }).then(() => alert("Chat sent to StudyBuddy 🎉"));
+};
+</script>
