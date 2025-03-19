@@ -11,6 +11,20 @@
 
     <h1 class="text-2xl font-bold text-purple-700 mb-6">Evalyn's StudyBuddy Portal</h1>
 
+    <!-- Structured Form for Evalyn's Responses -->
+    <form id="evalynForm" class="space-y-4">
+      <input type="text" id="dailySummary" class="w-full p-2 border rounded" placeholder="Daily Summary">
+      <input type="text" id="completedAssignments" class="w-full p-2 border rounded" placeholder="Completed Assignments">
+      <input type="text" id="moodCheckin" class="w-full p-2 border rounded" placeholder="Mood Check-in">
+      <input type="text" id="notesFromEvalyn" class="w-full p-2 border rounded" placeholder="Notes from Evalyn">
+      <button type="submit" class="w-full bg-purple-600 text-white p-2 rounded hover:bg-purple-700">
+        Submit Daily Updates
+      </button>
+    </form>
+
+    <hr class="my-6">
+
+    <!-- Assignments & Reminders Display -->
     <div class="mb-6">
       <h2 class="text-xl font-bold text-indigo-600 mb-4">Assignments & Reminders 📚</h2>
       <div id="updatesBox" class="bg-gray-100 rounded-lg p-4 h-48 overflow-auto">
@@ -23,6 +37,7 @@
 
     <hr class="my-6">
 
+    <!-- StudyBuddy Chat -->
     <div>
       <h2 class="text-xl font-bold text-green-600 mb-4">🌟 StudyBuddy Chat 🌟</h2>
       <div id="chatBox" class="bg-gray-100 rounded-lg p-4 h-48 overflow-auto">
@@ -41,37 +56,62 @@
   </div>
 
   <script>
-  document.getElementById('chatSend').addEventListener('click', () => {
-    const chatInput = document.getElementById('chatInput').value.trim();
+    // Form submission for Evalyn's updates
+    document.getElementById('evalynForm').addEventListener('submit', function(event) {
+      event.preventDefault();
 
-    if (chatInput !== "") {
-      const chatBox = document.getElementById('chatBox');
+      const formData = new URLSearchParams({
+        dailySummary: document.getElementById('dailySummary').value,
+        completedAssignments: document.getElementById('completedAssignments').value,
+        moodCheckin: document.getElementById('moodCheckin').value,
+        notesFromEvalyn: document.getElementById('notesFromEvalyn').value
+      });
 
-      const evalynMsgDiv = document.createElement('div');
-      evalynMsgDiv.className = 'bg-indigo-100 rounded p-2 text-sm mb-2';
-      evalynMsgDiv.textContent = chatInput;
-
-      chatBox.appendChild(evalynMsgDiv);
-      chatBox.scrollTop = chatBox.scrollHeight;
-
-      fetch('https://script.google.com/macros/s/AKfycbzCzOYGNP6AscbqlkPgu2prYtj-2N4jjLsGS5AlQKqOl4F95O23BMNBOz-ycNc5SDSM/exec', {
+      fetch('YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL', {
         method: 'POST',
         mode: 'no-cors',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams({ evalynMessage: chatInput })
+        body: formData
+      }).then(() => {
+        alert("Evalyn's updates successfully submitted! 🎉");
+        document.getElementById('evalynForm').reset();
+      }).catch(error => {
+        console.error('Error submitting form:', error);
       });
+    });
 
-      document.getElementById('chatInput').value = "";
+    // Chat message submission
+    document.getElementById('chatSend').addEventListener('click', () => {
+      const chatInput = document.getElementById('chatInput').value.trim();
+
+      if (chatInput !== "") {
+        const chatBox = document.getElementById('chatBox');
+
+        const evalynMsgDiv = document.createElement('div');
+        evalynMsgDiv.className = 'bg-indigo-100 rounded p-2 text-sm mb-2';
+        evalynMsgDiv.textContent = chatInput;
+
+        chatBox.appendChild(evalynMsgDiv);
+        chatBox.scrollTop = chatBox.scrollHeight;
+
+        fetch('https://script.google.com/macros/s/AKfycbw_6hivU1qFzVrLxX1j3QzU4n1I7wLw3IgtzwtPnojL4BZy568xXKoOWDztKb_e9fiq/exec', {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams({ chatMessage: chatInput })
+        });
+
+        document.getElementById('chatInput').value = "";
+      }
+    });
+
+    // Placeholder for future real-time updates
+    async function fetchUpdates() {
+      // Fetch and display logic here (future implementation)
     }
-  });
 
-  async function fetchUpdates() {
-    // (Optional) Future implementation for real-time updates from Parent Updates sheet
-  }
-
-  // Initialize periodic updates (Future-proofing feature)
-  // setInterval(fetchUpdates, 30000); // checks every 30 seconds
-
+    // Future update checker
+    // setInterval(fetchUpdates, 30000);
   </script>
 </body>
 </html>
