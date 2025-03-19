@@ -1,38 +1,65 @@
-<form id="evalynForm">
-  <input id="dailySummary" placeholder="Daily Summary">
-  <input id="completedAssignments" placeholder="Completed Assignments">
-  <input id="moodCheckin" placeholder="Mood Check-in">
-  <input id="notesFromEvalyn" placeholder="Notes from Evalyn">
-  <button type="submit">Submit</button>
-</form>
-
-<input id="chatInputEvalyn" placeholder="Message StudyBuddy">
-<button id="sendChatEvalyn">Send Chat</button>
-
-<script>
-document.getElementById('evalynForm').onsubmit = (e) => {
-  e.preventDefault();
-  fetch('https://script.google.com/macros/s/AKfycbyf_IDLlhxDEK9X3sm1iJMsapSw7CngesCN4lnWVLhdnFA-i876Toz3MY4KGSUx7rzY/exec', {
-    method: 'POST', mode: 'no-cors',
-    headers: {'Content-Type':'application/x-www-form-urlencoded'},
-    body: new URLSearchParams({
-      source: 'evalynForm',
-      dailySummary: document.getElementById('dailySummary').value,
-      completedAssignments: document.getElementById('completedAssignments').value,
-      moodCheckin: document.getElementById('moodCheckin').value,
-      notesFromEvalyn: document.getElementById('notesFromEvalyn').value
-    })
-  }).then(() => alert("Evalyn's updates submitted 🎉"));
-};
-
-document.getElementById('sendChatEvalyn').onclick = () => {
-  fetch('https://script.google.com/macros/s/AKfycbyf_IDLlhxDEK9X3sm1iJMsapSw7CngesCN4lnWVLhdnFA-i876Toz3MY4KGSUx7rzY/exec', {
-    method: 'POST', mode: 'no-cors',
-    headers: {'Content-Type':'application/x-www-form-urlencoded'},
-    body: new URLSearchParams({
-      source: 'evalynForm',
-      notesFromEvalyn: document.getElementById('chatInputEvalyn').value
-    })
-  }).then(() => alert("Chat sent to StudyBuddy 🎉"));
-};
-</script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Parent Update Portal - StudyBuddy</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { background-color: #f4f7fc; font-family: Arial, sans-serif; padding: 20px; }
+    .container { max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+    h1 { color: #4a90e2; text-align: center; }
+    label { font-weight: bold; color: #333; }
+    input, button { width: 100%; padding: 10px; margin-top: 5px; border-radius: 5px; border: 1px solid #ccc; }
+    button { background: #4a90e2; color: white; border: none; cursor: pointer; }
+    button:hover { background: #357ABD; }
+    .chat-container { background: #e3f2fd; padding: 10px; border-radius: 5px; margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Parent Update Portal - StudyBuddy</h1>
+    <form id="parentForm">
+      <label>Assignments:</label>
+      <input id="assignments" placeholder="Enter assignments">
+      <label>Reminders:</label>
+      <input id="reminders" placeholder="Enter reminders">
+      <label>Messages from Parents:</label>
+      <input id="messages" placeholder="Enter messages">
+      <button type="submit">Submit Updates</button>
+    </form>
+    <div class="chat-container">
+      <label>Message StudyBuddy:</label>
+      <input id="chatInput" placeholder="Type your message">
+      <button id="sendChat">Send Chat</button>
+    </div>
+  </div>
+  <script>
+    document.getElementById('parentForm').onsubmit = (e) => {
+      e.preventDefault();
+      fetch('https://script.google.com/macros/s/AKfycbyf_IDLlhxDEK9X3sm1iJMsapSw7CngesCN4lnWVLhdnFA-i876Toz3MY4KGSUx7rzY/exec', {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type':'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
+          source: 'parentForm',
+          assignments: document.getElementById('assignments').value,
+          reminders: document.getElementById('reminders').value,
+          messages: document.getElementById('messages').value
+        })
+      }).then(() => alert("Updates submitted 🎉"));
+    };
+    document.getElementById('sendChat').onclick = () => {
+      fetch('https://script.google.com/macros/s/AKfycbyf_IDLlhxDEK9X3sm1iJMsapSw7CngesCN4lnWVLhdnFA-i876Toz3MY4KGSUx7rzY/exec', {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type':'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
+          source: 'parentChat',
+          chatMessage: document.getElementById('chatInput').value
+        })
+      }).then(() => alert("Chat message sent! 🎉"));
+    };
+  </script>
+</body>
+</html>
