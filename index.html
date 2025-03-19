@@ -1,100 +1,80 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Evalyn's StudyBuddy Dashboard</title>
-  <style>
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #f0f8ff;
-      padding: 20px;
-      color: #333;
-    }
-
-    .container {
-      max-width: 800px;
-      margin: auto;
-      background-color: #ffffff;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    }
-
-    h1,
-    h2 {
-      color: #336699;
-      border-bottom: 2px solid #cce7ff;
-      padding-bottom: 5px;
-    }
-
-    ul {
-      list-style: none;
-      padding-left: 0;
-    }
-
-    li {
-      padding: 8px;
-      border-bottom: 1px solid #e7f0fd;
-    }
-
-    .messages,
-    .reply {
-      background-color: #e7f0fd;
-      padding: 10px;
-      margin-top: 10px;
-      border-radius: 5px;
-    }
-
-    textarea,
-    button {
-      width: 100%;
-      padding: 10px;
-      margin-top: 10px;
-      border-radius: 5px;
-      border: 1px solid #cccccc;
-    }
-
-    button {
-      background-color: #336699;
-      color: white;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background-color: #254a73;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evalyn's StudyBuddy Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
+<body class="bg-blue-50 p-8 font-sans">
+    <div class="max-w-2xl mx-auto bg-white shadow-lg rounded-lg p-6">
+        <h1 class="text-3xl font-bold text-blue-800 mb-6">Evalyn's StudyBuddy Dashboard</h1>
 
-<body>
-  <div class="container">
-    <h1>Evalyn's StudyBuddy Dashboard</h1>
+        <div class="mb-6">
+            <h2 class="text-xl font-semibold text-blue-700">Assignments</h2>
+            <ul class="list-disc pl-5">
+                <li>Math: Algebra Worksheet (Due: Today)</li>
+                <li>English: Book Report (Completed)</li>
+                <li>Science: Lab Notes (Due: Wednesday)</li>
+            </ul>
+        </div>
 
-    <h2>Assignments</h2>
-    <ul>
-      <li><strong>Math:</strong> Algebra Worksheet (Due: Today)</li>
-      <li><strong>English:</strong> Book Report (Completed)</li>
-      <li><strong>Science:</strong> Lab Notes (Due: Wednesday)</li>
-    </ul>
+        <div class="mb-6">
+            <h2 class="text-xl font-semibold text-blue-700">Reminders</h2>
+            <ul class="list-disc pl-5">
+                <li>Pack Dance Uniform for practice (Today at 4:00 PM)</li>
+                <li>Charge Chromebook overnight</li>
+            </ul>
+        </div>
 
-    <h2>Reminders</h2>
-    <ul>
-      <li>Pack Dance Uniform for practice (Today at 4:00 PM)</li>
-      <li>Charge Chromebook overnight</li>
-    </ul>
+        <div class="mb-6">
+            <h2 class="text-xl font-semibold text-blue-700">Messages from StudyBuddy</h2>
+            <ul class="list-disc pl-5">
+                <li>Great job completing your Book Report early! 🎉</li>
+                <li>Don't forget your Algebra Worksheet—ask me if you need help!</li>
+            </ul>
+        </div>
 
-    <h2>Messages from StudyBuddy</h2>
-    <div class="messages">
-      <p>🎉 Great job completing your Book Report early!</p>
-      <p>Don't forget your Algebra Worksheet—ask me if you need help!</p>
+        <hr class="my-4">
+
+        <div>
+            <h2 class="text-xl font-semibold text-blue-700 mb-2">Chat with StudyBuddy</h2>
+            <div id="chatBox" class="bg-gray-100 rounded-lg p-4 h-48 overflow-auto mb-4">
+                <div class="mb-2">
+                    <div class="text-sm font-medium text-gray-800">StudyBuddy:</div>
+                    <div class="bg-blue-100 rounded p-2 text-sm">Hi Evalyn! Ready to tackle today's goals?</div>
+                </div>
+            </div>
+
+            <div class="flex">
+                <input type="text" id="chatInput" class="flex-grow p-2 border rounded-l" placeholder="Type your message...">
+                <button id="chatSend" class="bg-blue-600 text-white p-2 rounded-r hover:bg-blue-700">Send</button>
+            </div>
+        </div>
     </div>
 
-    <h2>Reply to StudyBuddy</h2>
-    <textarea placeholder="Type your message..."></textarea>
-    <button>Send</button>
-  </div>
-</body>
+    <script>
+        document.getElementById('chatSend').addEventListener('click', function() {
+            const chatInput = document.getElementById('chatInput');
+            const chatBox = document.getElementById('chatBox');
 
+            if (chatInput.value.trim() !== '') {
+                const evalynMessage = document.createElement('div');
+                evalynMessage.innerHTML = `
+                    <div class="text-sm font-medium text-gray-800">Evalyn:</div>
+                    <div class="bg-green-100 rounded p-2 text-sm">${chatInput.value}</div>`;
+
+                chatBox.appendChild(evalynMessage);
+                chatInput.value = '';
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }
+        });
+
+        document.getElementById('chatInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                document.getElementById('chatSend').click();
+            }
+        });
+    </script>
+</body>
 </html>
