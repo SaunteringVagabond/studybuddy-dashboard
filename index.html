@@ -3,62 +3,79 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Parent Update Portal - StudyBuddy</title>
+  <title>Evalyn's StudyBuddy Portal</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    body { background-color: #f4f7fc; font-family: Arial, sans-serif; padding: 20px; }
-    .container { max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-    h1 { color: #4a90e2; text-align: center; }
-    label { font-weight: bold; color: #333; }
-    input, button { width: 100%; padding: 10px; margin-top: 5px; border-radius: 5px; border: 1px solid #ccc; }
-    button { background: #4a90e2; color: white; border: none; cursor: pointer; }
-    button:hover { background: #357ABD; }
-    .chat-container { background: #e3f2fd; padding: 10px; border-radius: 5px; margin-top: 20px; }
+    body { background-color: #eef2ff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px; }
+    .container { max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+    h1 { color: #6a0dad; text-align: center; font-size: 24px; }
+    label { font-weight: bold; color: #4a4a4a; display: block; margin-top: 10px; }
+    input, button { width: 100%; padding: 10px; margin-top: 5px; border-radius: 8px; border: 1px solid #ccc; font-size: 16px; }
+    button { background: #6a0dad; color: white; border: none; cursor: pointer; font-weight: bold; }
+    button:hover { background: #4a0d7a; }
+    .chat-container { background: #e3f2fd; padding: 12px; border-radius: 10px; margin-top: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    .chat-box { background: #f8f9fa; padding: 10px; border-radius: 10px; max-height: 200px; overflow-y: auto; }
+    .message { padding: 8px; border-radius: 5px; margin-bottom: 5px; }
+    .user-message { background: #d1c4e9; text-align: right; }
+    .studybuddy-message { background: #bbdefb; }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>Parent Update Portal - StudyBuddy</h1>
-    <form id="parentForm">
-      <label>Assignments:</label>
-      <input id="assignments" placeholder="Enter assignments">
-      <label>Reminders:</label>
-      <input id="reminders" placeholder="Enter reminders">
-      <label>Messages from Parents:</label>
-      <input id="messages" placeholder="Enter messages">
+    <h1>Evalyn's StudyBuddy Portal</h1>
+    <form id="evalynForm">
+      <label>Daily Summary:</label>
+      <input id="dailySummary" placeholder="Summarize your day">
+      <label>Completed Assignments:</label>
+      <input id="completedAssignments" placeholder="List assignments completed">
+      <label>Mood Check-in:</label>
+      <input id="moodCheckin" placeholder="How are you feeling today?">
+      <label>Notes from Evalyn:</label>
+      <input id="notesFromEvalyn" placeholder="Any additional notes?">
       <button type="submit">Submit Updates</button>
     </form>
     <div class="chat-container">
-      <label>Message StudyBuddy:</label>
-      <input id="chatInput" placeholder="Type your message">
-      <button id="sendChat">Send Chat</button>
+      <h2 class="text-lg font-bold text-purple-700">💬 Chat with StudyBuddy</h2>
+      <div id="chatBox" class="chat-box">
+        <div class="studybuddy-message message">Hi Evalyn! Ready to have a great study session?</div>
+      </div>
+      <input id="chatInputEvalyn" placeholder="Type your message">
+      <button id="sendChatEvalyn">Send Chat</button>
     </div>
   </div>
   <script>
-    document.getElementById('parentForm').onsubmit = (e) => {
+    document.getElementById('evalynForm').onsubmit = (e) => {
       e.preventDefault();
       fetch('https://script.google.com/macros/s/AKfycbyf_IDLlhxDEK9X3sm1iJMsapSw7CngesCN4lnWVLhdnFA-i876Toz3MY4KGSUx7rzY/exec', {
         method: 'POST',
         mode: 'no-cors',
         headers: { 'Content-Type':'application/x-www-form-urlencoded' },
         body: new URLSearchParams({
-          source: 'parentForm',
-          assignments: document.getElementById('assignments').value,
-          reminders: document.getElementById('reminders').value,
-          messages: document.getElementById('messages').value
+          source: 'evalynForm',
+          dailySummary: document.getElementById('dailySummary').value,
+          completedAssignments: document.getElementById('completedAssignments').value,
+          moodCheckin: document.getElementById('moodCheckin').value,
+          notesFromEvalyn: document.getElementById('notesFromEvalyn').value
         })
-      }).then(() => alert("Updates submitted 🎉"));
+      }).then(() => alert("Evalyn's updates submitted 🎉"));
     };
-    document.getElementById('sendChat').onclick = () => {
+    document.getElementById('sendChatEvalyn').onclick = () => {
       fetch('https://script.google.com/macros/s/AKfycbyf_IDLlhxDEK9X3sm1iJMsapSw7CngesCN4lnWVLhdnFA-i876Toz3MY4KGSUx7rzY/exec', {
         method: 'POST',
         mode: 'no-cors',
         headers: { 'Content-Type':'application/x-www-form-urlencoded' },
         body: new URLSearchParams({
-          source: 'parentChat',
-          chatMessage: document.getElementById('chatInput').value
+          source: 'evalynForm',
+          notesFromEvalyn: document.getElementById('chatInputEvalyn').value
         })
-      }).then(() => alert("Chat message sent! 🎉"));
+      }).then(() => {
+        let chatBox = document.getElementById('chatBox');
+        let userMsg = document.createElement('div');
+        userMsg.className = 'user-message message';
+        userMsg.textContent = document.getElementById('chatInputEvalyn').value;
+        chatBox.appendChild(userMsg);
+        document.getElementById('chatInputEvalyn').value = "";
+      });
     };
   </script>
 </body>
