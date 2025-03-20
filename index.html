@@ -14,11 +14,9 @@
     button { background: #6a0dad; color: white; border: none; cursor: pointer; font-weight: bold; transition: 0.3s; }
     button:hover { background: #4a0d7a; }
     .dashboard-section { background: #f8f9fa; padding: 15px; border-radius: 10px; margin-bottom: 20px; }
-    .chat-container { background: #e3f2fd; padding: 12px; border-radius: 10px; margin-top: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-    .chat-box { background: #f8f9fa; padding: 10px; border-radius: 10px; max-height: 200px; overflow-y: auto; }
-    .message { padding: 8px; border-radius: 5px; margin-bottom: 5px; }
-    .user-message { background: #d1c4e9; text-align: right; }
-    .studybuddy-message { background: #bbdefb; }
+    .task-table { width: 100%; border-collapse: collapse; }
+    .task-table th, .task-table td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+    .task-table th { background-color: #6a0dad; color: white; }
   </style>
 </head>
 <body>
@@ -29,58 +27,47 @@
       <p id="updatesBox">No new updates yet.</p>
     </div>
     <div class="dashboard-section">
-      <h2 class="text-lg font-bold text-purple-700">📖 Evalyn's Daily Updates</h2>
-      <form id="evalynForm">
-        <label>Daily Summary:</label>
-        <input id="dailySummary" placeholder="Summarize your day">
-        <label>Completed Assignments:</label>
-        <input id="completedAssignments" placeholder="List assignments completed">
-        <h2 class="text-lg font-bold text-purple-700">📖 Evalyn's Study Updates</h2>
-        <label>Notes for Evalyn:</label>
-        <input id="notesFromEvalyn" placeholder="Any additional notes?">
-        <button type="submit">Submit Updates</button>
-      </form>
+      <h2 class="text-lg font-bold text-purple-700">📝 StudyBuddy Task List</h2>
+      <table class="task-table">
+        <thead>
+          <tr>
+            <th>Task</th>
+            <th>Due Date</th>
+            <th>Status</th>
+            <th>Priority</th>
+          </tr>
+        </thead>
+        <tbody id="taskTableBody">
+          <tr><td colspan="4" class="text-center">Loading tasks...</td></tr>
+        </tbody>
+      </table>
     </div>
     
-      </div>
-      <input id="chatInputEvalyn" placeholder="Type your message">
-      <button id="sendChatEvalyn">Send Chat</button>
-    </div>
+<iframe src="https://calendar.google.com/calendar/embed?src=queenofpandas81%40gmail.com"
+  style="border: 0" width="600" height="400" frameborder="0" scrolling="no">
+</iframe>
   </div>
   <script>
-    document.getElementById('evalynForm').onsubmit = (e) => {
-      e.preventDefault();
-      fetch('https://script.google.com/macros/s/AKfycbwomXgliV6zBp57yB3V2DRrjH_bHr28Ve5C8wSQFzOOI1B340GGeFm26uKvPhlO0HaJ/exec', {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type':'application/x-www-form-urlencoded' },
-        body: new URLSearchParams({
-          source: 'evalynForm',
-          dailySummary: document.getElementById('dailySummary').value,
-          completedAssignments: document.getElementById('completedAssignments').value,
-          moodCheckin: document.getElementById('moodCheckin').value,
-          notesFromEvalyn: document.getElementById('notesFromEvalyn').value
-        })
-      }).then(() => alert("Evalyn's updates submitted 🎉"));
-    };
-    document.getElementById('sendChatEvalyn').onclick = () => {
-      fetch('https://script.google.com/macros/s/AKfycbwomXgliV6zBp57yB3V2DRrjH_bHr28Ve5C8wSQFzOOI1B340GGeFm26uKvPhlO0HaJ/exec', {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type':'application/x-www-form-urlencoded' },
-        body: new URLSearchParams({
-          source: 'evalynForm',
-          notesFromEvalyn: document.getElementById('chatInputEvalyn').value
-        })
-      }).then(() => {
-        let chatBox = document.getElementById('chatBox');
-        let userMsg = document.createElement('div');
-        userMsg.className = 'user-message message';
-        userMsg.textContent = document.getElementById('chatInputEvalyn').value;
-        chatBox.appendChild(userMsg);
-        document.getElementById('chatInputEvalyn').value = "";
+    async function fetchTasks() {
+      const response = await fetch('YOUR_APPS_SCRIPT_WEB_APP_URL');
+      const tasks = await response.json();
+      
+      const taskTableBody = document.getElementById('taskTableBody');
+      taskTableBody.innerHTML = "";
+
+      tasks.forEach(task => {
+        let row = `<tr>
+          <td>${task.taskName}</td>
+          <td>${task.dueDate}</td>
+          <td>${task.status}</td>
+          <td>${task.priority}</td>
+        </tr>`;
+        taskTableBody.innerHTML += row;
       });
-    };
+    }
+
+    fetchTasks();
+    setInterval(fetchTasks, 60000); // Refresh task list every minute
   </script>
 </body>
 </html>
