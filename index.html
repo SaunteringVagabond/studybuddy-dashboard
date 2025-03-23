@@ -1,73 +1,157 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Evalyn's StudyBuddy Dashboard</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    body { background-color: #eef2ff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px; }
-    .container { max-width: 700px; margin: auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-    h1 { color: #6a0dad; text-align: center; font-size: 26px; font-weight: bold; }
-    label { font-weight: bold; color: #4a4a4a; display: block; margin-top: 10px; }
-    input, button { width: 100%; padding: 12px; margin-top: 5px; border-radius: 8px; border: 1px solid #ccc; font-size: 16px; }
-    button { background: #6a0dad; color: white; border: none; cursor: pointer; font-weight: bold; transition: 0.3s; }
-    button:hover { background: #4a0d7a; }
-    .dashboard-section { background: #f8f9fa; padding: 15px; border-radius: 10px; margin-bottom: 20px; }
-    .task-table { width: 100%; border-collapse: collapse; }
-    .task-table th, .task-table td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-    .task-table th { background-color: #6a0dad; color: white; }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <h1>Evalyn's StudyBuddy Dashboard</h1>
-    <div class="dashboard-section">
-      <h2 class="text-lg font-bold text-indigo-600">📚 Assignments & Reminders</h2>
-      <p id="updatesBox">No new updates yet.</p>
-    </div>
-    <div class="dashboard-section">
-      <h2 class="text-lg font-bold text-purple-700">📝 StudyBuddy Task List</h2>
-      <table class="task-table">
-        <thead>
-          <tr>
-            <th>Task</th>
-            <th>Due Date</th>
-            <th>Status</th>
-            <th>Priority</th>
-          </tr>
-        </thead>
-        <tbody id="taskTableBody">
-          <tr><td colspan="4" class="text-center">Loading tasks...</td></tr>
-        </tbody>
-      </table>
-    </div>
-    
-<iframe src="https://calendar.google.com/calendar/embed?src=queenofpandas81%40gmail.com"
-  style="border: 0" width="600" height="400" frameborder="0" scrolling="no">
-</iframe>
-  </div>
-  <script>
-    async function fetchTasks() {
-      const response = await fetch('YOUR_APPS_SCRIPT_WEB_APP_URL');
-      const tasks = await response.json();
-      
-      const taskTableBody = document.getElementById('taskTableBody');
-      taskTableBody.innerHTML = "";
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { GoogleSpreadsheet } from 'google-spreadsheet';
+import CalendarEmbed from './components/CalendarEmbed';
 
-      tasks.forEach(task => {
-        let row = `<tr>
-          <td>${task.taskName}</td>
-          <td>${task.dueDate}</td>
-          <td>${task.status}</td>
-          <td>${task.priority}</td>
-        </tr>`;
-        taskTableBody.innerHTML += row;
-      });
+const SHEET_ID = process.env.REACT_APP_SHEET_ID;
+const API_KEY = process.env.REACT_APP_GOOGLE_API_KEY;
+
+const WebPortal = () => {
+  const [tasks, setTasks] = useState([]);
+  const [reminders, setReminders] = useState([]);
+  const [events, setEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [easterEgg, setEasterEgg] = useState(null);
+
+  const messages = [
+    "You're doing amazing!",
+    "Keep shining bright, Evalyn!",
+    "Why was the math book sad? Because it had too many problems!",
+    "What did the Irish dancer say when she lost her shoe? 'Heel come back!'"
+  ];
+
+  const fetchSheetData = async () => {
+    setLoading(true);
+    try {
+      const doc = new GoogleSpreadsheet(SHEET_ID);
+      await doc.useApiKey(API_KEY);
+      await doc.loadInfo();
+
+      const tasksSheet = doc.sheetsByTitle['Tasks'];
+      const remindersSheet = doc.sheetsByTitle['Reminders'];
+      const eventsSheet = doc.sheetsByTitle['Events'];
+
+      const [tasksRows, remindersRows, eventsRows] = await Promise.all([
+        tasksSheet.getRows(),
+        remindersSheet.getRows(),
+        eventsSheet.getRows(),
+      ]);
+
+      setTasks(tasksRows);
+      setReminders(remindersRows);
+      setEvents(eventsRows);
+    } catch (err) {
+      setError('Could not load data.');
+      console.error(err);
+    } finally {
+      setLoading(false);
     }
+  };
 
-    fetchTasks();
-    setInterval(fetchTasks, 60000); // Refresh task list every minute
-  </script>
-</body>
-</html>
+  useEffect(() => {
+    fetchSheetData();
+  }, []);
+
+  const removeTask = async (index) => {
+    const taskToRemove = tasks[index];
+    await taskToRemove.delete();
+    setTasks(prevTasks => prevTasks.filter((_, i) => i !== index));
+  };
+
+  const showEasterEgg = () => {
+    const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+    setEasterEgg(randomMessage);
+  };
+
+  if (loading) return <div className="text-center py-8">Loading...</div>;
+  if (error) return <div className="text-center text-red-500 py-8">{error}</div>;
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 p-6 font-sans">
+      <h1 className="text-3xl font-bold mb-4 text-center">Evalyn's Portal</h1>
+      <button
+        onClick={fetchSheetData}
+        className="mb-4 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded block mx-auto"
+      >
+        Refresh Data
+      </button>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="bg-white shadow-lg rounded-2xl p-4">
+          <h2 className="text-xl font-semibold mb-2">Tasks</h2>
+          <AnimatePresence>
+            {tasks.map((task, index) => (
+              <motion.div
+                key={index}
+                className="flex justify-between items-center p-2 border-b"
+                initial={{ opacity: 1 }}
+                exit={{ opacity: 0, x: 50 }}
+              >
+                <span>{task.title}</span>
+                <input
+                  type="checkbox"
+                  aria-label={`Complete task: ${task.title}`}
+                  onClick={() => removeTask(index)}
+                />
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        </div>
+
+        <div className="bg-white shadow-lg rounded-2xl p-4">
+          <h2 className="text-xl font-semibold mb-2">Reminders</h2>
+          {reminders.map((reminder, index) => (
+            <div key={index} className="p-2 border-b">
+              <span>{reminder.note}</span>
+            </div>
+          ))}
+        </div>
+
+        <div className="bg-white shadow-lg rounded-2xl p-4">
+          <h2 className="text-xl font-semibold mb-2">Upcoming Events</h2>
+          <div className="flex overflow-x-scroll gap-4">
+            {events.map((event, index) => (
+              <div key={index} className="min-w-[200px] bg-green-100 rounded-lg p-3">
+                <h3 className="font-semibold">{event.name}</h3>
+                <p className="text-sm">{event.date}</p>
+                <ul className="mt-2">
+                  {event.items?.split(',').map((item, i) => (
+                    <li key={i}>• {item.trim()}</li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <iframe src="https://calendar.google.com/calendar/embed?height=600&wkst=1&ctz=Europe%2FBerlin&showPrint=0&showTz=0&src=cXVlZW5vZnBhbmRhczgxQGdtYWlsLmNvbQ&src=ZW4udXNhI2hvbGlkYXlAZ3JvdXAudi5jYWxlbmRhci5nb29nbGUuY29t&color=%23039BE5&color=%230B8043" style="border:solid 1px #777" width="800" height="600" frameborder="0" scrolling="no">
+        
+      </iframe>
+
+      {easterEgg && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50">
+          <div className="bg-white rounded-xl p-6 shadow-xl">
+            <p>{easterEgg}</p>
+            <button
+              onClick={() => setEasterEgg(null)}
+              className="mt-4 bg-green-500 text-white py-2 px-4 rounded"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+
+      <div
+        className="fixed bottom-4 right-4 cursor-pointer opacity-30 hover:opacity-100 transition-opacity"
+        onClick={showEasterEgg}
+      >
+        ☘️
+      </div>
+    </div>
+  );
+};
+
+export default WebPortal;
