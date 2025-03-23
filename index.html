@@ -1,16 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { GoogleSpreadsheet } from 'google-spreadsheet';
 import CalendarEmbed from './components/CalendarEmbed';
-
-const SHEET_ID = process.env.REACT_APP_SHEET_ID;
-const API_KEY = process.env.REACT_APP_GOOGLE_API_KEY;
 
 const WebPortal = () => {
   const [tasks, setTasks] = useState([]);
   const [reminders, setReminders] = useState([]);
   const [events, setEvents] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [easterEgg, setEasterEgg] = useState(null);
 
@@ -21,61 +17,14 @@ const WebPortal = () => {
     "What did the Irish dancer say when she lost her shoe? 'Heel come back!'"
   ];
 
-  const fetchSheetData = async () => {
-    setLoading(true);
-    try {
-      const doc = new GoogleSpreadsheet(SHEET_ID);
-      await doc.useApiKey(API_KEY);
-      await doc.loadInfo();
-
-      const tasksSheet = doc.sheetsByTitle['Tasks'];
-      const remindersSheet = doc.sheetsByTitle['Reminders'];
-      const eventsSheet = doc.sheetsByTitle['Events'];
-
-      const [tasksRows, remindersRows, eventsRows] = await Promise.all([
-        tasksSheet.getRows(),
-        remindersSheet.getRows(),
-        eventsSheet.getRows(),
-      ]);
-
-      setTasks(tasksRows);
-      setReminders(remindersRows);
-      setEvents(eventsRows);
-    } catch (err) {
-      setError('Could not load data.');
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchSheetData();
-  }, []);
-
-  const removeTask = async (index) => {
-    const taskToRemove = tasks[index];
-    await taskToRemove.delete();
-    setTasks(prevTasks => prevTasks.filter((_, i) => i !== index));
-  };
-
   const showEasterEgg = () => {
     const randomMessage = messages[Math.floor(Math.random() * messages.length)];
     setEasterEgg(randomMessage);
   };
 
-  if (loading) return <div className="text-center py-8">Loading...</div>;
-  if (error) return <div className="text-center text-red-500 py-8">{error}</div>;
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 p-6 font-sans">
       <h1 className="text-3xl font-bold mb-4 text-center">Evalyn's Portal</h1>
-      <button
-        onClick={fetchSheetData}
-        className="mb-4 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded block mx-auto"
-      >
-        Refresh Data
-      </button>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <div className="bg-white shadow-lg rounded-2xl p-4">
@@ -92,7 +41,6 @@ const WebPortal = () => {
                 <input
                   type="checkbox"
                   aria-label={`Complete task: ${task.title}`}
-                  onClick={() => removeTask(index)}
                 />
               </motion.div>
             ))}
@@ -126,9 +74,9 @@ const WebPortal = () => {
         </div>
       </div>
 
-      <iframe src="https://calendar.google.com/calendar/embed?height=600&wkst=1&ctz=Europe%2FBerlin&showPrint=0&showTz=0&src=cXVlZW5vZnBhbmRhczgxQGdtYWlsLmNvbQ&src=ZW4udXNhI2hvbGlkYXlAZ3JvdXAudi5jYWxlbmRhci5nb29nbGUuY29t&color=%23039BE5&color=%230B8043" style="border:solid 1px #777" width="800" height="600" frameborder="0" scrolling="no">
-        
-      </iframe>
+     <iframe src="https://calendar.google.com/calendar/embed?height=600&wkst=1&ctz=Europe%2FBerlin&showPrint=0&showTz=0&src=cXVlZW5vZnBhbmRhczgxQGdtYWlsLmNvbQ&src=ZW4udXNhI2hvbGlkYXlAZ3JvdXAudi5jYWxlbmRhci5nb29nbGUuY29t&color=%23039BE5&color=%230B8043" style="border:solid 1px #777" width="800" height="600" frameborder="0" scrolling="no">
+       
+     </iframe>
 
       {easterEgg && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50">
