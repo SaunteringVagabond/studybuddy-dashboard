@@ -1,111 +1,100 @@
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { GoogleSpreadsheet } from 'google-spreadsheet';
+<!DOCTYPE html>
+<html lang="en">
 
-const SHEET_ID = "your_google_sheet_id_here";
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Evalyn's StudyBuddy Dashboard</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f0f8ff;
+      padding: 20px;
+      color: #333;
+    }
 
-const WebPortal = () => {
-  const [tasks, setTasks] = useState([]);
-  const [reminders, setReminders] = useState([]);
-  const [events, setEvents] = useState([]);
-  const [messages] = useState([
-    "You're doing amazing!",
-    "Keep shining bright, Evalyn!",
-    "Why was the math book sad? Because it had too many problems!",
-    "What did the Irish dancer say when she lost her shoe? 'Heel come back!'"
-  ]);
+    .container {
+      max-width: 800px;
+      margin: auto;
+      background-color: #ffffff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
 
-  const fetchSheetData = async () => {
-    const doc = new GoogleSpreadsheet(SHEET_ID);
-    await doc.useApiKey('your_api_key_here');
-    await doc.loadInfo();
+    h1,
+    h2 {
+      color: #336699;
+      border-bottom: 2px solid #cce7ff;
+      padding-bottom: 5px;
+    }
 
-    const tasksSheet = doc.sheetsByTitle['Tasks'];
-    const remindersSheet = doc.sheetsByTitle['Reminders'];
-    const eventsSheet = doc.sheetsByTitle['Events'];
+    ul {
+      list-style: none;
+      padding-left: 0;
+    }
 
-    const tasksRows = await tasksSheet.getRows();
-    const remindersRows = await remindersSheet.getRows();
-    const eventsRows = await eventsSheet.getRows();
+    li {
+      padding: 8px;
+      border-bottom: 1px solid #e7f0fd;
+    }
 
-    setTasks(tasksRows);
-    setReminders(remindersRows);
-    setEvents(eventsRows);
-  };
+    .messages,
+    .reply {
+      background-color: #e7f0fd;
+      padding: 10px;
+      margin-top: 10px;
+      border-radius: 5px;
+    }
 
-  useEffect(() => {
-    fetchSheetData();
-  }, []);
+    textarea,
+    button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      border-radius: 5px;
+      border: 1px solid #cccccc;
+    }
 
-  const removeTask = (index) => {
-    setTasks(prevTasks => prevTasks.filter((_, i) => i !== index));
-  };
+    button {
+      background-color: #336699;
+      color: white;
+      cursor: pointer;
+    }
 
-  const showEasterEgg = () => {
-    const randomMessage = messages[Math.floor(Math.random() * messages.length)];
-    alert(randomMessage);
-  };
+    button:hover {
+      background-color: #254a73;
+    }
+  </style>
+</head>
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 p-6 font-sans">
-      <h1 className="text-3xl font-bold mb-4 text-center">Evalyn's Portal</h1>
+<body>
+  <div class="container">
+    <h1>Evalyn's StudyBuddy Dashboard</h1>
 
-      <div className="grid md:grid-cols-2 gap-4">
-        <div className="bg-white shadow-lg rounded-2xl p-4">
-          <h2 className="text-xl font-semibold mb-2">Tasks</h2>
-          <AnimatePresence>
-            {tasks.map((task, index) => (
-              <motion.div
-                key={index}
-                className="flex justify-between items-center p-2 border-b"
-                initial={{ opacity: 1 }}
-                exit={{ opacity: 0, x: 50 }}
-              >
-                <span>{task.title}</span>
-                <input type="checkbox" onClick={() => removeTask(index)} />
-              </motion.div>
-            ))}
-          </AnimatePresence>
-        </div>
+    <h2>Assignments</h2>
+    <ul>
+      <li><strong>Math:</strong> Algebra Worksheet (Due: Today)</li>
+      <li><strong>English:</strong> Book Report (Completed)</li>
+      <li><strong>Science:</strong> Lab Notes (Due: Wednesday)</li>
+    </ul>
 
-        <div className="bg-white shadow-lg rounded-2xl p-4">
-          <h2 className="text-xl font-semibold mb-2">Reminders</h2>
-          {reminders.map((reminder, index) => (
-            <div key={index} className="p-2 border-b">
-              <span>{reminder.note}</span>
-            </div>
-          ))}
-        </div>
-      </div>
+    <h2>Reminders</h2>
+    <ul>
+      <li>Pack Dance Uniform for practice (Today at 4:00 PM)</li>
+      <li>Charge Chromebook overnight</li>
+    </ul>
 
-      <div className="mt-4 bg-white shadow-lg rounded-2xl p-4">
-        <h2 className="text-xl font-semibold mb-2">Upcoming Events</h2>
-        <div className="flex overflow-x-scroll gap-4">
-          {events.map((event, index) => (
-            <div key={index} className="min-w-[200px] bg-green-100 rounded-lg p-3">
-              <h3 className="font-semibold">{event.name}</h3>
-              <p className="text-sm">{event.date}</p>
-              <ul className="mt-2">
-                {event.items?.split(',').map((item, i) => (
-                  <li key={i}>[] {item.trim()}</li>
-                ))}
-              </ul>
-            </div>
-          <iframe src="https://calendar.google.com/calendar/embed?height=600&wkst=1&ctz=Europe%2FBerlin&showPrint=0&showTz=0&src=cXVlZW5vZnBhbmRhczgxQGdtYWlsLmNvbQ&src=ZW4udXNhI2hvbGlkYXlAZ3JvdXAudi5jYWxlbmRhci5nb29nbGUuY29t&color=%23039BE5&color=%230B8043" style="border:solid 1px #777" width="800" height="600" frameborder="0" scrolling="no">
-            
-          </iframe>
-          ))}
-        </div>
-      </div>
-
-      <div
-        className="fixed bottom-4 right-4 cursor-pointer opacity-30 hover:opacity-100 transition-opacity"
-        onClick={showEasterEgg}
-      >
-        ☘️
-      </div>
+    <h2>Messages from StudyBuddy</h2>
+    <div class="messages">
+      <p>🎉 Great job completing your Book Report early!</p>
+      <p>Don't forget your Algebra Worksheet—ask me if you need help!</p>
     </div>
-  );
-};
 
-export default WebPortal;
+    <h2>Reply to StudyBuddy</h2>
+    <textarea placeholder="Type your message..."></textarea>
+    <button>Send</button>
+  </div>
+</body>
+
+</html>
